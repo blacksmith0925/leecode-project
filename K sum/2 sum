@@ -1,36 +1,53 @@
 #include <stdio.h>
 #include <malloc.h>
 
-/*这种方法基于数组有序的情况下。，若数组无序，则需要先进行排序，排序的时间复杂度是O（nlogn） 。 
-使用首尾两个指针进行搜索，时间复杂度是O（n），所以总的时间复杂度是O（nlogn）*/
+/*这种方法基于数组有序的情况下。，若数组无序，则需要先进行排序，排序的时间复杂度是O（n2）---选择排序 。 
+使用首尾两个指针进行搜索，时间复杂度是O（n），所以总的时间复杂度是O（n2）*/
 
 int* twoSum(int* nums, int numsSize, int target) {
+	/*选择排序*/ 
+    int i,j,temp;
+    for(i =0;i<numsSize-1;i++){
+        for(j=i+1;j<numsSize;j++){
+            if(nums[j]<nums[i]){
+                temp = nums[i];
+                nums[i] = nums[j];
+                nums[j] = temp;
+            }
+        }
+    }
+    for(i=0;i<numsSize;i++){
+        printf("%d ",nums[i]);
+    }
+    
+    /*双指针搜索*/ 
 	int *pa = &nums[0];
 	int *pb = &nums[numsSize-1];
-	int *result = (int*)malloc(sizeof(int));
-	int a[2];
+	static int a[2];
 	int sum;
 	while(*pa < *pb){
-	    sum = *pa + *pb;
-	    printf("%d\n",sum);
+	    sum = *pa+*pb;
 	    if(sum == target){
 	        a[0] = *pa;
 	        a[1] = *pb;
+            printf("%d %d\n",a[0],a[1]);
 	        break;
 	    }
 	    else if(sum<target){
-	        pa++;
+	        ++pa;
 	    }
 	    else{
-    		pb--;
+    		--pb;
     	}
 	}
-	result = a;
-	return result;   
+    return a;   /*最终返回值为相加等于target的两个数，而不是返回在原数组中的位置，因为经过排序之后原数组的顺序已经被打乱了，
+    		  所以要求返回位置的话不适合本方法*/
 }
+    
+
 
 int main(){
-	int nums[4] ={2,7,11,15};
+	int nums[4] ={7,2,18,3};
 	int target =9,numsSize = 4;
 	int *a;
 	a = twoSum(nums,numsSize,target);
