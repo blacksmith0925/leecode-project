@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <malloc.h>
+/*
+ *采用先排序然后利用2sum的思路，排序的时间复杂度是O(n2)，
+ * 对数组进行一次遍历，3sum问题就变成对于每个nums[i],求两数之和为target-nums[i]的2sum问题
+ *2sum问题的双指针搜索解法的时间复杂度是O（n），所以乘以一次遍历的总的时间复杂度为O（n2）
+ * 整个程序的时间复杂度就是O（n2）*/
+
+ /*在本方法中，由于进行了排序，所以不适合返回原位置的情况。*/
+
+int** threeSum(int* nums, int numsSize, int* returnSize) {
+
+    /*选择排序*/
+    int i,j,temp,sum2,sum;
+    for(i =0;i<numsSize-1;i++){
+        for(j=i+1;j<numsSize;j++){
+            if(nums[j]<nums[i]){
+                temp = nums[i];
+                nums[i] = nums[j];
+                nums[j] = temp;
+            }
+        }
+    }
+    for(i=0;i<numsSize;i++){
+        printf("%d ",nums[i]);
+    }
+
+
+    int **p = (int**)malloc(sizeof(int*));
+    /*双指针搜索*/
+    for(i=0;i<numsSize-2;i++){
+        sum2 = 0 - nums[i];
+        int *pa = &nums[i+1];
+        int *pb = &nums[numsSize-1];
+        while(*pa < *pb){
+            sum = *pa+*pb;
+            if(sum == sum2){
+                p[*returnSize] = (int*)malloc(sizeof(int)*3);
+                p[*returnSize][0] = nums[i];
+                p[*returnSize][1] = *pa;
+                p[*returnSize][2] = *pb;
+                *returnSize += 1;
+                ++pa;
+                --pb;
+                continue;
+            }
+            else if(sum<sum2){
+                ++pa;
+            }
+            else{
+                --pb;
+            }
+        }
+    }
+    return p;/*返回值为一个指向二维数组的二级指针*/
+}
+
+int main(){
+
+    int nums[6] = {-1,0,1,2,-1,-4};
+    int numsSize = 6,returnSize=0;
+    int** pa =  threeSum(nums, numsSize, &returnSize);
+    printf("\n\n%d\n",returnSize);
+    for(int i=0;i<returnSize;i++){
+        printf("%d %d %d\n",pa[i][0],pa[i][1],pa[i][2]);
+    }
+
+    free(pa);
+}
+/*返回的结果中会有重复，还需要一步去重的步骤*/
