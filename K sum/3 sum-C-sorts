@@ -26,10 +26,14 @@ int** threeSum(int* nums, int numsSize, int* returnSize) {
     }
 
 
-    int **p = (int**)malloc(sizeof(int*));
+    int **p = (int**)malloc(sizeof(int*));/*实际上这里应该指明行数，但是由于行数提前不知道，所以这里没有写，在leetcode中是非法的，但是在CLion中是可以正常运行的*/
     /*双指针搜索*/
     for(i=0;i<numsSize-2;i++){
-        sum2 = 0 - nums[i];
+        if(nums[i]!=nums[i-1]){
+            sum2 = 0 - nums[i];
+        }else{
+            break;
+        }
         int *pa = &nums[i+1];
         int *pb = &nums[numsSize-1];
         while(*pa < *pb){
@@ -67,4 +71,4 @@ int main(){
 
     free(pa);
 }
-/*返回的结果中会有重复，还需要一步去重的步骤*/
+
