@@ -1,0 +1,16 @@
+class Solution:
+    def twoSum(self, nums, target):
+        """
+        使用散列表可以将2 sum问题的时间复杂度降低到O（n），这是因为在散列表中进行查找的时间复杂度是O（1），
+        所以程序的时间复杂度主要体现在列表的一次遍历。
+        """
+        dict = {}
+        list = []
+        for i in range(len(nums)):
+            dict[nums[i]] = i  //将nums中的数据与其位置分别作为key和value存入散列表。
+        
+        for i in range(len(nums)):
+            if target-nums[i] in dict.keys() and dict[target - nums[i]]!=i:
+                list = [i,dict[target - nums[i]]] //返回的是num在列表中的位置。
+                break
+        return list
