@@ -11,13 +11,13 @@
 int** threeSum(int* nums, int numsSize, int* returnSize) {
 
     /*选择排序*/
-    int i,j,temp,sum2,sum;
+    int i,m,temp,sum2,sum;
     for(i =0;i<numsSize-1;i++){
-        for(j=i+1;j<numsSize;j++){
-            if(nums[j]<nums[i]){
+        for(m=i+1;m<numsSize;m++){
+            if(nums[m]<nums[i]){
                 temp = nums[i];
-                nums[i] = nums[j];
-                nums[j] = temp;
+                nums[i] = nums[m];
+                nums[m] = temp;
             }
         }
     }
@@ -29,30 +29,44 @@ int** threeSum(int* nums, int numsSize, int* returnSize) {
     int **p = (int**)malloc(sizeof(int*));/*实际上这里应该指明行数，但是由于行数提前不知道，所以这里没有写，在leetcode中是非法的，但是在CLion中是可以正常运行的*/
     /*双指针搜索*/
     for(i=0;i<numsSize-2;i++){
-        if(nums[i]!=nums[i-1]){
-            sum2 = 0 - nums[i];
-        }else{
+        if(nums[i]>0){
             break;
         }
-        int *pa = &nums[i+1];
-        int *pb = &nums[numsSize-1];
-        while(*pa < *pb){
-            sum = *pa+*pb;
+        if(i!=0){
+            if(nums[i]!=nums[i-1]){
+                sum2 = 0 - nums[i];
+            }else{
+                continue;
+            }
+        }else{
+            sum2 = 0 - nums[i];
+        }
+
+        int j = i+1;
+        int k = numsSize-1;
+        while(j < k){
+            sum = nums[j]+nums[k];
             if(sum == sum2){
                 p[*returnSize] = (int*)malloc(sizeof(int)*3);
                 p[*returnSize][0] = nums[i];
-                p[*returnSize][1] = *pa;
-                p[*returnSize][2] = *pb;
+                p[*returnSize][1] = nums[j];
+                p[*returnSize][2] = nums[k];
                 *returnSize += 1;
-                ++pa;
-                --pb;
+                while(nums[j+1]==nums[j]){
+                    j++;
+                }
+                while(nums[k+1]==nums[k]){
+                    k--;
+                }
+                ++j;
+                --k;
                 continue;
             }
             else if(sum<sum2){
-                ++pa;
+                ++j;
             }
             else{
-                --pb;
+                --k;
             }
         }
     }
@@ -61,8 +75,8 @@ int** threeSum(int* nums, int numsSize, int* returnSize) {
 
 int main(){
 
-    int nums[6] = {-1,0,1,2,-1,-4};
-    int numsSize = 6,returnSize=0;
+    int nums[5] = {-2,0,0,2,2};
+    int numsSize = 5,returnSize=0;
     int** pa =  threeSum(nums, numsSize, &returnSize);
     printf("\n\n%d\n",returnSize);
     for(int i=0;i<returnSize;i++){
