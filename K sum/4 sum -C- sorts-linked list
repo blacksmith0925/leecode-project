@@ -1,0 +1,162 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
+
+// *采用先排序然后利用3sum的思路，排序的时间复杂度是O(n2)，
+// * 对数组进行一次遍历，4sum问题就变成对于每个nums[i],求三数之和为target-nums[i]的3sum问题
+// *3sum问题的双指针搜索解法的时间复杂度是O（n2），所以乘以一次遍历的总的时间复杂度为O（n3）
+// * 整个程序的时间复杂度就是O（n3）*/
+//
+///*在本方法中，由于进行了排序，所以不适合返回原位置的情况。*/
+
+/*链表实现*/
+struct node
+{
+    int a[4];
+    struct node *next;
+};
+struct node* add_to_list(struct node* head,int num1,int num2,int num3,int num4)
+{
+    struct node *new_node;
+    new_node = (struct node*)malloc(sizeof(struct node));
+    if(new_node == NULL)
+    {
+        printf("Error:malloc failed in add_into_list\n");
+        exit(EXIT_FAILURE);
+    }
+
+    new_node->a[0] = num1;
+    new_node->a[1] = num2;
+    new_node->a[2] = num3;
+    new_node->a[3] = num4;
+
+    new_node->next = head;
+    return new_node;
+
+}
+
+
+struct node* threeSum(int* nums, int numsSize, int* count,int sum3,int num4, struct node*head,int position) {
+
+    int sum2,sum;
+    /*创建链表*/
+
+
+    /*双指针搜索*/
+    for(int i=0;i<numsSize-2;i++){
+        if(i<=position){                /*都是为了去重啊T T*/
+            continue;
+        }
+        if(i == position +1){
+            sum2 = sum3 - nums[i];
+        }else{
+            if(nums[i]==nums[i-1]){
+                continue;
+            }else{
+                sum2 = sum3 - nums[i];
+            }
+        }
+
+        int j = i+1;
+        int k = numsSize-1;
+        while(j < k){
+            sum = nums[j]+nums[k];
+            if(sum == sum2){
+                head = add_to_list(head,nums[i],nums[j],nums[k],num4);
+                *count += 1;
+                while(nums[j]==nums[j+1]){
+                    j++;
+                }
+                while(nums[k]==nums[k-1]){
+                    k--;
+                }
+                j++;
+                k--;
+                continue;
+            }
+            else if(sum<sum2){
+                ++j;
+            }
+            else{
+                --k;
+            }
+        }
+    }
+
+    return head;/*返回值为一个链表，该链表存储了包括本次循环在内的之前所有循环的结果（一维数组）*/
+}
+
+int** fourSum(int* nums, int numsSize, int target, int* returnSize) {
+
+
+    /*选择排序*/
+    int i,m,temp;
+    for(i =0;i<numsSize-1;i++){
+        for(m=i+1;m<numsSize;m++){
+            if(nums[m]<nums[i]){
+                temp = nums[i];
+                nums[i] = nums[m];
+                nums[m] = temp;
+            }
+        }
+    }
+
+    int sum3;
+    struct node *head; /*创建链表*/
+    head = NULL;
+    for(i=0;i<numsSize;i++){
+        int count=0;
+        if(nums[i]>0){
+            continue;
+        }
+        if(i == 0){   /*写这么复杂都是为了去重啊T T*/
+            sum3 = target - nums[i];
+        }else{
+            if(nums[i]!=nums[i-1]){
+                sum3 = target - nums[i];
+            }else{
+                continue;
+            }
+        }
+
+        head = threeSum(nums,numsSize,&count,sum3,nums[i],head,i);/*利用3sum函数来实现4sum，注意函数中每个参数的作用，返回值为一个存储一维数组的链表*/
+        *returnSize += count;
+    }
+
+    int **p,k=0;
+    p = (int**)malloc(sizeof(int*)**returnSize);
+    struct node *q = head;
+    while(q!=NULL){
+        p[k] = (int*)malloc(sizeof(int)*4);
+
+        p[k][0] = q ->a[0];
+        p[k][1] = q ->a[1];
+        p[k][2] = q ->a[2];
+        p[k][3] = q ->a[3];
+        k += 1;
+        q = q->next;
+    }
+
+    /*删除链表，释放内存*/
+    while(head!=NULL){
+        struct node *pa = head;
+        head = head->next;
+        free(pa);
+    }
+    free(head);
+
+    return p;/*返回指向二维数组的二级指针*/
+}
+
+int main(){
+    int nums[8] = {-3,-2,-1,0,0,1,2,3},numsSize=8,target=0,returnSize=0;
+    int **p = fourSum(nums,numsSize,target,&returnSize);
+
+    printf("\n\n%d\n\n",returnSize);
+    for(int i=0;i<returnSize;i++){
+        printf("%d %d %d %d\n",p[i][0],p[i][1],p[i][2],p[i][3]);
+    }
+    free(p);
+
+    return 0;
+}
